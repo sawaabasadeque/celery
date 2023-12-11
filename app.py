@@ -13,7 +13,7 @@ def require_api_key(view_function):
     @wraps(view_function)
     def decorated_function(*args, **kwargs):
         api_key = os.getenv('x-api-key')
-        logging.info(f'Expected API Key: {api_key}')
+        
         received_api_key = request.headers.get('x-api-key')
         logging.info(f'Received API Key: {received_api_key}')
         if received_api_key and received_api_key == api_key:
