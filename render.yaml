@@ -1,7 +1,7 @@
 services:
   - type: worker
     name: queue
-    region: ohio
+    region: oregon
     env: python
     buildCommand: "pip install -r requirements.txt"
     startCommand: "celery --app tasks worker --loglevel info --concurrency 4"
@@ -14,7 +14,7 @@ services:
           property: connectionString
   - type: web
     name: app
-    region: ohio
+    region: oregon
     env: python
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn app:app"
@@ -27,7 +27,7 @@ services:
           property: connectionString
   - type: web
     name: flower
-    region: ohio
+    region: oregon
     plan: free
     env: python
     buildCommand: "pip install -r requirements.txt"
@@ -41,7 +41,7 @@ services:
           property: connectionString
   - type: redis
     name: celery-redis
-    region: ohio
+    region: oregon
     plan: starter # we choose a plan with persistence to ensure tasks are not lost upon restart
     maxmemoryPolicy: noeviction # recommended policy for queues
     ipAllowList: [] # only allow internal connections
