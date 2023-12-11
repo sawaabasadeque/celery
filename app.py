@@ -1,11 +1,10 @@
 import os
-from flask import Flask, flash, render_template, redirect, request, jsonify
-from tasks import add, run_backtest
+from flask import Flask, request, jsonify
+from tasks import run_backtest
 from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', "super-secret")
-
 
 def require_api_key(view_function):
     @wraps(view_function)
