@@ -9,7 +9,7 @@ app.secret_key = os.getenv('FLASK_SECRET_KEY', "super-secret")
 def require_api_key(view_function):
     @wraps(view_function)
     def decorated_function(*args, **kwargs):
-        api_key = os.getenv('YOUR_API_KEY')
+        api_key = os.getenv('x-api-key')
         if request.headers.get('x-api-key') and request.headers.get('x-api-key') == api_key:
             return view_function(*args, **kwargs)
         else:
