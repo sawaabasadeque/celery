@@ -40,12 +40,15 @@ def require_api_key(view_function):
 @app.route('/start_backtest', methods=['POST'])
 @require_api_key
 def start_backtest():
-    # Extract parameters from the request
-    params = request.get_json()
-    # Start the backtest task
-    task = run_backtest.delay(params)
-    # Return the task id to the client
-    return jsonify({'task_id': task.id}), 202
+    try:
+        # Extract parameters from the request
+        params = request.get_json()
+        # Start the backtest task
+        task = run_backtest.delay(params)
+        # Return the task id to the client
+        return jsonify({'task_id': task.id}), 202
+    except Exception as e:
+        return jsonify(error=str(e)), 400
 
 @app.route('/backtest_status/<task_id>', methods=['GET'])
 @require_api_key
