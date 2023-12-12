@@ -24,19 +24,6 @@ def require_api_key(view_function):
             return jsonify(error="API key is missing or incorrect"), 403
     return decorated_function
 
-# @app.route('/')
-# def main():
-#     return render_template('main.html')
-
-
-# @app.route('/add', methods=['POST'])
-# def add_inputs():
-#     x = int(request.form['x'] or 0)
-#     y = int(request.form['y'] or 0)
-#     add.delay(x, y)
-#     flash("Your addition job has been submitted.")
-#     return redirect('/')
-
 @app.route('/start_backtest', methods=['POST'])
 @require_api_key
 def start_backtest():
