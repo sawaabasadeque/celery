@@ -15,7 +15,6 @@ def require_api_key(view_function):
         api_key = os.getenv('x-api-key')
         
         received_api_key = request.headers.get('x-api-key')
-        logging.info(f'Received API Key: {received_api_key}')
         if received_api_key and received_api_key == api_key:
             logging.info('API key validated successfully.')
             return view_function(*args, **kwargs)

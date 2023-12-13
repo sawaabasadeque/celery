@@ -10,6 +10,7 @@ click==8.1.2
 click-didyoumean==0.3.0
 click-plugins==1.1.1
 click-repl==0.2.0
+db-dtypes==1.2.0
 Deprecated==1.2.13
 Flask==2.1.1
 flower==1.0.0
@@ -34,6 +35,7 @@ pandas==2.1.4
 prometheus-client==0.14.1
 prompt-toolkit==3.0.29
 protobuf==4.25.1
+pyarrow==14.0.1
 pyasn1==0.5.1
 pyasn1-modules==0.3.0
 pyparsing==3.0.8
