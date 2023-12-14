@@ -1,0 +1,3 @@
+[submodule "backtester"]
+	path = backtester
+	url = git@github.com:brodyu/backtesting_engine.git
