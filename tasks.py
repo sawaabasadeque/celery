@@ -3,7 +3,7 @@ import time
 from celery import Celery
 from celery.utils.log import get_task_logger
 from google.cloud import bigquery
-from backtester.backtester import Backtester
+from backtester.backtester import BacktestEngine
 
 app = Celery('tasks', broker=os.getenv("CELERY_BROKER_URL"))
 logger = get_task_logger(__name__)
@@ -17,7 +17,7 @@ class NoDataFoundException(Exception):
 
 @app.task
 def run_backtest(params):
-    backtesting_engine = Backtester(start_date="01-01-2020",
+    backtesting_engine = BacktestEngine(start_date="01-01-2020",
                                     end_date="01-01-2023")
     logger.info('Beginning backtest...')
     sql_query = f"""
