@@ -7,11 +7,11 @@ This repository contains the code of the cloud/devops infrastructure for a backt
 ## Built With
 - [![Python][Python]][Python-url]
 - [![Flask][Flask]][Flask-url]
+- [![Celery][Celery]][Celery-url]
 - [![Google Cloud][Google-Cloud]][Google-Cloud-url]
-- [![Ansible][Ansible]][Ansible-url]
-- [![Docker][Docker]][Docker-url]
+- [![Render][Render]][Render-url]
 ## Software Architecture
-![Backtester](/.eraser/3gqDvxUWy0i7b2QwokUH___sKBE7gxtknX4C1dnV5iZm5p6Y362___---figure---YvTC83-I-BsLbUjo_gPoP---figure---4lCH0VxQODwRTz8yr6f3tQ.png "Backtester")
+![Backtester](/.eraser/3gqDvxUWy0i7b2QwokUH___sKBE7gxtknX4C1dnV5iZm5p6Y362___---figure---P_uzPjoTDe2Q15ItqKhAS---figure---JMmCUZqRgfCqyyTacu1t5A.png "Backtester")
 
 
 
@@ -29,21 +29,21 @@ This repository contains the code of the cloud/devops infrastructure for a backt
 
 
 
-[Ansible]: https://img.shields.io/badge/-Ansible-red?style=for-the-badge&logo=ansible&logoColor=white
+[Render]: ﻿﻿https://﻿img.shields.io/badge/-Render-blue?style=for-the-badge&logo=render&logoColor=white
 
-[Ansible-url]: https://www.ansible.com/
-
-
-
-[Docker]: https://img.shields.io/badge/-Docker-blue?style=for-the-badge&logo=docker&logo
-
-[Docker-url]: https://www.docker.com/
+[Render-url]: https://www.﻿render.com/ 
 
 
 
 [Flask]: https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white
 
 [Flask-url]: https://flask.palletsprojects.com/en/3.0.x/
+
+
+
+[Celery]: https://﻿img.shields.io/badge/-Celery-green?style=for-the-badge&logo=celery&logoColor=white 
+
+[Celery-url]: https://﻿flask.palletsprojects.com/en/2.3.x/patterns/celery/ 
 
 
 
