@@ -11,7 +11,7 @@ This repository contains the code of the cloud/devops infrastructure for a backt
 - [![Google Cloud][Google-Cloud]][Google-Cloud-url]
 - [![Render][Render]][Render-url]
 ## Software Architecture
-![Backtester](/.eraser/3gqDvxUWy0i7b2QwokUH___sKBE7gxtknX4C1dnV5iZm5p6Y362___---figure---P_uzPjoTDe2Q15ItqKhAS---figure---JMmCUZqRgfCqyyTacu1t5A.png "Backtester")
+![Backtester](/.eraser/3gqDvxUWy0i7b2QwokUH___sKBE7gxtknX4C1dnV5iZm5p6Y362___---figure---wPTjhH4eUhudl86t3MKGN---figure---JMmCUZqRgfCqyyTacu1t5A.png "Backtester")
 
 
 
@@ -41,7 +41,7 @@ This repository contains the code of the cloud/devops infrastructure for a backt
 
 
 
-[Celery]: https://﻿img.shields.io/badge/-Celery-green?style=for-the-badge&logo=celery&logoColor=white 
+[Celery]: https://﻿img.shields.io/badge/-Celery-green?style=for-the-badge&logo=celery&logoColor=white
 
 [Celery-url]: https://﻿flask.palletsprojects.com/en/2.3.x/patterns/celery/ 
 
