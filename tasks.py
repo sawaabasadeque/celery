@@ -3,7 +3,7 @@ import time
 from celery import Celery
 from celery.utils.log import get_task_logger
 from google.cloud import bigquery
-from backtester.backtester import BacktestEngine
+from backtester.engine import BacktestEngine
 
 app = Celery('tasks', broker=os.getenv("CELERY_BROKER_URL"))
 logger = get_task_logger(__name__)
@@ -17,16 +17,13 @@ class NoDataFoundException(Exception):
 
 @app.task
 def run_backtest(params):
-    backtesting_engine = BacktestEngine(start_date="01-01-2020",
-                                    end_date="01-01-2023")
-    logger.info('Beginning backtest...')
-    sql_query = f"""
-        SELECT * 
-        FROM `alduin-390505.eod_options_chain_daily_dataset.2021-01-options-chain`
-        LIMIT 5;
-    """
+    backtester = BacktestEngine(start_date=params.get("start_date"),
+                                end_date=params.get("end_date"),
+                                sell_strike_method=params.get("sell_strike_method", "percent_under"),
+                                portfolio_value=params.get("portfolio_value", 1000000),
+                                spread=params.get("spread", 50))
     try:
-        data = query_bigquery(sql_query)
+        executed_trades, realized_trades, benchmark_data, unrealized_results = backtester.run()
         logger.info("Successfully queried data for date 2021-01 and root SPX")
     except NoDataFoundException as e:
         logger.warning(f"Failed to fetch data for date 2021-01 and root SPX. Error: {e}")
