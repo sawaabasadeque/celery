@@ -22,11 +22,7 @@ def run_backtest(params):
                                 sell_strike_method=params.get("sell_strike_method", "percent_under"),
                                 portfolio_value=params.get("portfolio_value", 1000000),
                                 spread=params.get("spread", 50))
-    try:
-        executed_trades, realized_trades, benchmark_data, unrealized_results = backtester.run()
-        logger.info("Successfully queried data for date 2021-01 and root SPX")
-    except NoDataFoundException as e:
-        logger.warning(f"Failed to fetch data for date 2021-01 and root SPX. Error: {e}")
+    eval_data, unrealized_results = backtester.run()
     logger.info('Backtest completed.')
     # Convert data into json for response
     data_json = data.to_json(orient='records')
