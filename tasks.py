@@ -15,20 +15,19 @@ class NoDataFoundException(Exception):
         super().__init__(message)
         logger.error(f"NoDataFoundException: {message}")
 
-@app.task
-def run_backtest(params):
+@app.task(bind=True)
+def run_backtest(self, params):
+    task_id = self.request.id
+    logger.info(f"Initializing backtest for task {task_id}")
     backtester = BacktestEngine(start_date=params.get("start_date"),
                                 end_date=params.get("end_date"),
                                 sell_strike_method=params.get("sell_strike_method", "percent_under"),
                                 portfolio_value=params.get("portfolio_value", 1000000),
                                 spread=params.get("spread", 50))
+    
     eval_data, unrealized_results = backtester.run()
-    logger.info('Backtest completed.')
-    # Convert data into json for response
-    data_json = data.to_json(orient='records')
 
-    trades = backtesting_engine.simulate_trades()
-    return trades
+    return unrealized_results
 
 def query_bigquery(sql_query):
     """Query the BigQuery database given a SQL query string."""
