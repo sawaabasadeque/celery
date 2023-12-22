@@ -5,9 +5,7 @@
 This repository contains the code of the cloud/devops infrastructure for a backtesting engine. The backtester simulates the trades of a specific multi-leg options strategy in Python using tabular options chain data stored in a data warehouse. Our infrastructure is based on Render and our data warehouse is built on Google's BigQuery.
 
 ## Software Architecture
-![Backtester](/.eraser/3gqDvxUWy0i7b2QwokUH___sKBE7gxtknX4C1dnV5iZm5p6Y362___---figure---AIJ1qK2VV7q0cD0ng4R8f---figure---JMmCUZqRgfCqyyTacu1t5A.png "Backtester")
-
-
+![Backtester](/.eraser/3gqDvxUWy0i7b2QwokUH___sKBE7gxtknX4C1dnV5iZm5p6Y362___---figure---EfBHkHgeye35Zw10PrW1p---figure---JMmCUZqRgfCqyyTacu1t5A.png "Backtester")
 
 
 
