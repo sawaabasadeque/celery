@@ -31,48 +31,46 @@ def run_backtest(self, params):
     
     eval_data, unrealized_results = backtester.run()
 
-    # Save unrealized_results dataframe to BigQuery
     dataset_id = os.getenv('dataset_id')
-    logger.info(f'Dataset ID: {dataset_id}')
-    unrealized_results.to_csv('unrealized_results.csv', index=False)
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    table_name = f"{dataset_id}.unrealized_results_{timestamp}"
 
+    # Save unrealized_results to BigQuery and metadata to Postgres
+    upload_to_bigquery(table_name, unrealized_results, 'unrealized_results.csv')
+    save_to_postgres(task_id, table_name)
+
+    return unrealized_results
+
+def upload_to_bigquery(table_name, df, file_name):
+    logger.info(f'Uploading {file_name} to BigQuery table {table_name}...')
+    df.to_csv(file_name, index=False)
     client = bigquery.Client()
     job_config = bigquery.LoadJobConfig(
         source_format=bigquery.SourceFormat.CSV,
         skip_leading_rows=1,
         autodetect=True,
     )
+    try:
+        with open(file_name, 'rb') as source_file:
+            job = client.load_table_from_file(source_file, table_name, job_config=job_config)
+        job.result()
+    except Exception as e:
+        logger.error(f'Failed to upload {file_name} to BigQuery: {e}')
+        raise
+    finally:
+        os.remove(file_name)
 
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    table_name = f"{dataset_id}.unrealized_results_{timestamp}"
-    logger.info(f'Table name: {table_name}')
-    with open('unrealized_results.csv', 'rb') as source_file:
-        job = client.load_table_from_file(source_file, table_name, job_config=job_config)
-    job.result()
-    os.remove('unrealized_results.csv')
-
-    # Save backtest metadata to Postgres database
+def save_to_postgres(task_id, table_name):
+    logger.info(f'Saving task {task_id} to Postgres backtests table...')
     session = Session()
-    new_backtest = Backtest(id=uuid.uuid4(),
-                            task_id=task_id,
-                            bigquery_table=table_name)
-    session.add(new_backtest)
-    session.commit()
-
-    return unrealized_results
-
-def query_bigquery(sql_query):
-    """Query the BigQuery database given a SQL query string."""
-
-    # Create a "Client" object
-    client = bigquery.Client()
-
-    # Run the query, and convert the results to a pandas DataFrame
-    query_job = client.query(sql_query)
-    dataframe = query_job.to_dataframe()
-
-    # If the dataframe is not empty, return it
-    if not dataframe.empty:
-        return dataframe
-    else:
-        raise NoDataFoundException(f"No data found for the provided query.")
+    try:
+        new_backtest = Backtest(id=uuid.uuid4(),
+                                task_id=task_id,
+                                bigquery_table=table_name)
+        session.add(new_backtest)
+        session.commit()
+    except Exception as e:
+        logger.error(f'Failed to save task {task_id} to Postgres: {e}')
+        raise
+    finally:
+        session.close()
