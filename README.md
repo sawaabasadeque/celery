@@ -1,11 +1,15 @@
-# Celery on Render
+<p><a target="_blank" href="https://app.eraser.io/workspace/3gqDvxUWy0i7b2QwokUH" id="edit-in-eraser-github-link"><img alt="Edit in Eraser" src="https://firebasestorage.googleapis.com/v0/b/second-petal-295822.appspot.com/o/images%2Fgithub%2FOpen%20in%20Eraser.svg?alt=media&amp;token=968381c8-a7e7-472a-8ed6-4a6626da5501"></a></p>
 
-This repo can be used to deploy the [Celery](https://github.com/celery/celery) distributed task queue on [Render](https://render.com). 
-It also includes deployment instructions for [Flower](https://github.com/mher/flower), a web monitoring frontend for Celery.
+# Derivatives Backtesting Engine
+## Overview
+This repository contains the code of the cloud/devops infrastructure for a backtesting engine. The backtester simulates the trades of a specific multi-leg options strategy in Python using tabular options chain data stored in a data warehouse. Our infrastructure is based on Render and our data warehouse is built on Google's BigQuery.
 
-## Deployment
-Fork this repo and click the button below to try it out:
+## Software Architecture
+![Backtester](/.eraser/3gqDvxUWy0i7b2QwokUH___sKBE7gxtknX4C1dnV5iZm5p6Y362___---figure---AIJ1qK2VV7q0cD0ng4R8f---figure---JMmCUZqRgfCqyyTacu1t5A.png "Backtester")
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
-Follow the guide at https://render.com/docs/deploy-celery for more information.
+
+
+
+
+<!--- Eraser file: https://app.eraser.io/workspace/3gqDvxUWy0i7b2QwokUH --->
