@@ -33,6 +33,7 @@ def run_backtest(self, params):
 
     # Save unrealized_results dataframe to BigQuery
     dataset_id = os.getenv('dataset_id')
+    logger.info(f'Dataset ID: {dataset_id}')
     unrealized_results.to_csv('unrealized_results.csv', index=False)
 
     client = bigquery.Client()
@@ -44,6 +45,7 @@ def run_backtest(self, params):
 
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     table_name = f"{dataset_id}.unrealized_results_{timestamp}"
+    logger.info(f'Table name: {table_name}')
     with open('unrealized_results.csv', 'rb') as source_file:
         job = client.load_table_from_file(source_file, table_name, job_config=job_config)
     job.result()
