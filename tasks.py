@@ -149,8 +149,8 @@ def generate_portfolio_stats(daily_returns, initial_portfolio_value):
         'max_drawdown_percent': max_drawdown_percent,
         'max_drawdown': max_drawdown,
         'std_deviation': std_deviation,
-        'positive_days': positive_periods,
-        'negative_days': negative_periods,
+        'positive_periods': positive_periods,
+        'negative_periods': negative_periods,
         'average_daily_return': average_daily_return
     }
 
