@@ -138,8 +138,8 @@ def generate_portfolio_stats(daily_returns, initial_portfolio_value):
     # Standard Deviation
     std_deviation = calculate_portfolio_std(daily_returns)
 
-    positive_periods = (daily_returns['daily_return_percent'] > 0).sum()
-    negative_periods = (daily_returns['daily_return_percent'] < 0).sum()
+    positive_periods = int((daily_returns['daily_return_percent'] > 0).sum())
+    negative_periods = int((daily_returns['daily_return_percent'] < 0).sum())
 
     average_daily_return = daily_returns['daily_return_percent'].mean()
 
