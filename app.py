@@ -1,8 +1,12 @@
 import os
+import uuid
 import logging
 from flask import Flask, request, jsonify
 from tasks import run_backtest
 from functools import wraps
+from database.db import Session
+from database.models import Backtest
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -29,10 +33,16 @@ def start_backtest():
     try:
         # Extract parameters from the request
         params = request.get_json()
+        # Add backtest_id to params
+        backtest_id = uuid.uuid4()
+        params['backtest_id'] = backtest_id
         # Start the backtest task
         task = run_backtest.delay(params)
+        task_id = task.id
+        # Save the initial backtesting info to Postgres
+        pre_backtest_updates(task_id, params)
         # Return the task id to the client
-        return jsonify({'task_id': task.id}), 202
+        return jsonify({'task_id': task_id}), 202
     except Exception as e:
         return jsonify(error=str(e)), 400
 
@@ -58,3 +68,25 @@ def backtest_status(task_id):
             'status': str(task.info),  # this is the exception raised
         }
     return jsonify(response)
+
+def pre_backtest_updates(task_id, params):
+    session = Session()
+    try:
+        logging.info(f'Saving task {task_id} to Postgres backtests table...')
+        
+        new_backtest = Backtest(id=params['backtest_id'],
+                                task_id=task_id,
+                                start_date=params['start_date'],
+                                end_date=params['end_date'],
+                                spread=params.get('spread', 50),
+                                initial_portfolio_value=params.get('initial_portfolio_value', 1000000),
+                                status='running',
+                                sell_strike_method=params.get('sell_strike_method', 'percent_under'))
+        session.add(new_backtest)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        logging.error(f'Failed to save task {task_id} to Postgres: {e}')
+        raise
+    finally:
+        session.close()
