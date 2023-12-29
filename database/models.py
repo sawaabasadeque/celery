@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, DateTime, String, func, Float, Integer, ForeignKey
+from sqlalchemy import Column, Date, Enum, DateTime, String, func, Float, Integer, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -12,6 +12,12 @@ class Backtest(Base):
     task_id = Column(String, nullable=False)
     submitted_at = Column(DateTime, server_default=func.now())
     bigquery_table = Column(String, nullable=False)
+    start_date = Column(Date)
+    end_date = Column(Date)
+    spread = Column(Integer)
+    initial_portfolio_value = Column(Float)
+    status = Column(Enum('running', 'completed', 'error', name='status_enum'))
+    sell_strike_method = Column(Enum('percent_under', 'desired_premium', name='sell_strike_method_enum'))
 
 class Statistic(Base):
     __tablename__ = 'statistics'

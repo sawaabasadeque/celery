@@ -6,6 +6,7 @@ from tasks import run_backtest
 from functools import wraps
 from database.db import Session
 from database.models import Backtest
+from utils import get_first_and_last_day
 
 
 logging.basicConfig(level=logging.INFO)
@@ -73,11 +74,12 @@ def pre_backtest_updates(task_id, params):
     session = Session()
     try:
         logging.info(f'Saving task {task_id} to Postgres backtests table...')
-        
+        start_date, _ = get_first_and_last_day(params['start_date'])
+        _, end_date = get_first_and_last_day(params['end_date'])
         new_backtest = Backtest(id=params['backtest_id'],
                                 task_id=task_id,
-                                start_date=params['start_date'],
-                                end_date=params['end_date'],
+                                start_date=start_date,
+                                end_date=end_date,
                                 spread=params.get('spread', 50),
                                 initial_portfolio_value=params.get('initial_portfolio_value', 1000000),
                                 status='running',
