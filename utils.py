@@ -1,4 +1,26 @@
 import numpy as np
+from datetime import datetime, timedelta
+
+def get_first_and_last_day(year_month_str):
+    """
+    Get the first and last day of the month based on the given year and month string.
+
+    Args:
+        year_month_str (str): The year and month in the format 'YYYY-MM'.
+
+    Returns:
+        tuple: A tuple containing the first day and last day of the month as datetime.date objects.
+    """
+    # Parse the year and month from the string
+    year, month = map(int, year_month_str.split('-'))
+    # Get the first day of the month
+    first_day = datetime(year, month, 1)
+    # Get the last day of the month
+    if month == 12:
+        last_day = datetime(year + 1, 1, 1) - timedelta(days=1)
+    else:
+        last_day = datetime(year, month + 1, 1) - timedelta(days=1)
+    return first_day.date(), last_day.date()
 
 def calculate_total_return(dataframe, starting_portfolio_value):
     """

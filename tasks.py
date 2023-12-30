@@ -84,7 +84,7 @@ def run_backtest(self, params):
     # Upload each results dataframe to BigQuery and upload metadata + statistics to Postgres
     for table_name, info in backtest_upload_info.items():
         upload_df_to_bigquery(table_name, info["dataframe"], info["file_name"])
-    save_to_postgres(task_id, table_name, statistics)
+    post_backtest_updates(task_id, table_name, statistics)
     return {
             "task_id": task_id,
             "start_date": params.get("start_date"),
@@ -187,7 +187,7 @@ def upload_df_to_bigquery(table_name, df, file_name):
     finally:
         os.remove(file_name)
 
-def save_to_postgres(task_id, backtest_table_name, statistics):
+def post_backtest_updates(task_id, backtest_id, backtest_table_name, statistics):
     """
     Save the task to the Postgres backtests table and the statistics to a separate table.
 
@@ -202,23 +202,21 @@ def save_to_postgres(task_id, backtest_table_name, statistics):
     """
     session = Session()
     try:
-        backtest_id = uuid.uuid4()
-
-        logger.info(f'Saving task {task_id} to Postgres backtests table...')
-        new_backtest = Backtest(id=backtest_id,
-                                task_id=task_id,
-                                bigquery_table=backtest_table_name)
-        session.add(new_backtest)
+        # Update the row with bigquery_table
+        logger.info(f'Updating task {task_id} with BigQuery table name...')
+        backtest = session.query(Backtest).filter(Backtest.id == backtest_id).first()
+        backtest.bigquery_table = backtest_table_name
+        backtest.status = 'completed'
         session.commit()
 
         logger.info(f'Saving statistics for task {task_id} to Postgres statistics table...')
-        # Assuming you have a separate table for statistics
         new_statistics = Statistic(id=uuid.uuid4(),
                                    backtest_id=backtest_id,
                                    **statistics)
         session.add(new_statistics)
         session.commit()
     except Exception as e:
+        session.rollback()
         logger.error(f'Failed to save task {task_id} to Postgres: {e}')
         raise
     finally:
