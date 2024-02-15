@@ -20,6 +20,7 @@ decorator==5.1.1
 Deprecated==1.2.13
 executing==2.0.1
 Flask==2.1.1
+Flask-Cors==4.0.0
 flower==1.0.0
 google-api-core==2.15.0
 google-auth==2.25.2

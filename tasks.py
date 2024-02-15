@@ -2,7 +2,7 @@ import os
 import uuid
 import pandas as pd
 import numpy as np
-
+from functools import wraps
 from datetime import datetime
 from celery import Celery
 from celery.utils.log import get_task_logger
@@ -16,14 +16,29 @@ from utils import calculate_total_return, calculate_max_drawdown, calculate_port
 app = Celery('tasks', broker=os.getenv("CELERY_BROKER_URL"))
 logger = get_task_logger(__name__)
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/etc/secrets/alduin-390505-cc185311f611.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv("gcp_credentials_path")
 
 class NoDataFoundException(Exception):
     def __init__(self, message):
         super().__init__(message)
         logger.error(f"NoDataFoundException: {message}")
 
+def update_error_status(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            task_id = args[0].request.id
+            params = args[1]
+            backtest_id = params.get('backtest_id')
+            logger.error(f'Error running backtest {task_id}: {e}')
+            error_status_update(backtest_id)
+            raise
+    return wrapper
+
 @app.task(bind=True)
+@update_error_status
 def run_backtest(self, params):
     """
     Run a backtest using the provided parameters.
@@ -37,6 +52,7 @@ def run_backtest(self, params):
 
     """
     task_id = self.request.id
+    backtest_id = params.get('backtest_id')
     testing = params.get("testing", False)
     initial_portfolio_value = params.get("portfolio_value", 1000000)
 
@@ -84,7 +100,7 @@ def run_backtest(self, params):
     # Upload each results dataframe to BigQuery and upload metadata + statistics to Postgres
     for table_name, info in backtest_upload_info.items():
         upload_df_to_bigquery(table_name, info["dataframe"], info["file_name"])
-    post_backtest_updates(task_id, params.get('backtest_id'), table_name, statistics)
+    post_backtest_updates(task_id, backtest_id, table_name, statistics)
     return {
             "task_id": task_id,
             "start_date": params.get("start_date"),
@@ -218,6 +234,26 @@ def post_backtest_updates(task_id, backtest_id, backtest_table_name, statistics)
     except Exception as e:
         session.rollback()
         logger.error(f'Failed to save task {task_id} to Postgres: {e}')
+        raise
+    finally:
+        session.close()
+
+def error_status_update(backtest_id):
+    """
+    Updates the status column of a backtest to 'error'.
+
+    Args:
+        backtest_id (str): The ID of the backtest.
+    """
+    session = Session()
+    try:
+        logger.info(f'Updating backtest {backtest_id} status to error...')
+        backtest = session.query(Backtest).filter(Backtest.id == backtest_id).first()
+        backtest.status = 'error'
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        logger.error(f'Failed to update backtest {backtest_id} status to error: {e}')
         raise
     finally:
         session.close()

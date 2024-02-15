@@ -1,17 +1,20 @@
 import os
 import uuid
 import logging
+from flask_cors import CORS
 from flask import Flask, request, jsonify
 from tasks import run_backtest
 from functools import wraps
+from sqlalchemy import desc
 from database.db import Session
-from database.models import Backtest
+from database.models import Backtest, Statistic
 from utils import get_first_and_last_day
 
 
 logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
+CORS(app)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', "super-secret")
 
 def require_api_key(view_function):
@@ -47,28 +50,21 @@ def start_backtest():
     except Exception as e:
         return jsonify(error=str(e)), 400
 
-@app.route('/backtest_status/<task_id>', methods=['GET'])
+@app.route('/backtests', methods=['GET'])
 @require_api_key
-def backtest_status(task_id):
-    # Query the status of the backtest task
-    task = run_backtest.AsyncResult(task_id)
-    if task.state == 'PENDING':
-        response = {
-            'state': task.state,
-            'status': 'Pending...'
-        }
-    elif task.state != 'FAILURE':
-        response = {
-            'state': task.state,
-            'result': task.info,  # this is the result returned by `run_backtest` task
-        }
-    else:
-        # something went wrong in the background job
-        response = {
-            'state': task.state,
-            'status': str(task.info),  # this is the exception raised
-        }
-    return jsonify(response)
+def get_backtests():
+    session = Session()
+    try:
+        # Perform a join between backtests and statistics tables and order by the submission date in descending order
+        results = session.query(Backtest, Statistic).outerjoin(Statistic, Backtest.id == Statistic.backtest_id).order_by(desc(Backtest.submitted_at)).all()
+        # Convert the query results to dictionaries and return as JSON
+        backtests_statistics = [{'backtest': backtest.to_dict(), 'statistic': statistic.to_dict() if statistic else None} for backtest, statistic in results]
+        return jsonify(backtests_statistics)
+    
+    except Exception as e:
+        return jsonify(error=str(e)), 400
+    finally:
+        session.close()
 
 def pre_backtest_updates(task_id, params):
     session = Session()
