@@ -1,6 +1,7 @@
 import os
 import uuid
 import logging
+from flask_cors import CORS
 from flask import Flask, request, jsonify
 from tasks import run_backtest
 from functools import wraps
@@ -13,6 +14,7 @@ from utils import get_first_and_last_day
 logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
+CORS(app)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', "super-secret")
 
 def require_api_key(view_function):
