@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, Date, Enum, DateTime, String, func, Float, Integer, ForeignKey
+from sqlalchemy import Column, Date, Enum, DateTime, String, func, Float, Integer, ForeignKey, inspect
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -19,6 +19,9 @@ class Backtest(Base):
     status = Column(Enum('running', 'completed', 'error', name='status_enum'))
     sell_strike_method = Column(Enum('percent_under', 'desired_premium', name='sell_strike_method_enum'))
 
+    def to_dict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
 class Statistic(Base):
     __tablename__ = 'statistics'
 
@@ -32,3 +35,6 @@ class Statistic(Base):
     positive_periods = Column(Integer)
     negative_periods = Column(Integer)
     average_daily_return = Column(Float)
+
+    def to_dict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
