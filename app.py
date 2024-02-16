@@ -56,12 +56,21 @@ def get_backtests():
     session = Session()
     try:
         # Perform a join between backtests and statistics tables and order by the submission date in descending order
-        results = session.query(Backtest, Statistic).outerjoin(Statistic, Backtest.id == Statistic.backtest_id).order_by(desc(Backtest.submitted_at)).all()
+        results = session.query(Backtest, Statistic)\
+            .outerjoin(Statistic, Backtest.id == Statistic.backtest_id)\
+            .order_by(desc(Backtest.submitted_at)).all()
+        
         # Convert the query results to dictionaries and return as JSON
-        backtests_statistics = [{'backtest': backtest.to_dict(), 'statistic': statistic.to_dict() if statistic else None} for backtest, statistic in results]
+        backtests_statistics = [
+            {
+                'backtest': backtest.to_dict(),
+                'statistic': statistic.to_dict() if statistic else None
+            } for backtest, statistic in results
+        ]
         return jsonify(backtests_statistics)
     
     except Exception as e:
+        logging.error(f'Failed to fetch backtests: {e}')
         return jsonify(error=str(e)), 400
     finally:
         session.close()
