@@ -90,8 +90,14 @@ def get_raw_data():
         # Create a BigQuery client
         client = bigquery.Client()
 
+        # Parse the bigquery_table parameter into a TableReference object
+        table_ref = bigquery.TableReference.from_string(bigquery_table)
+
+        # Convert the TableReference object back into a string
+        table_id = table_ref.to_bqstorage()
+
         # Query the table
-        query = f"SELECT * FROM `{bigquery_table}`"
+        query = f"SELECT * FROM `{table_id}`"
         query_job = client.query(query)
 
         # Convert the query results to dictionaries
