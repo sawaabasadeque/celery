@@ -9,7 +9,7 @@ from sqlalchemy import desc
 from database.db import Session
 from database.models import Backtest, Statistic
 from utils import get_first_and_last_day
-
+from google.cloud import bigquery
 
 logging.basicConfig(level=logging.INFO)
 
@@ -74,6 +74,31 @@ def get_backtests():
         return jsonify(error=str(e)), 400
     finally:
         session.close()
+
+@app.route('/raw_data', methods=['GET'])
+@require_api_key
+def get_raw_data():
+    try:
+       # Extract parameters from the query string
+        bigquery_table = request.args.get('bigquery_table')
+        
+        if not bigquery_table:
+            return jsonify(error="bigquery_table parameter is required"), 400
+
+        # Create a BigQuery client
+        client = bigquery.Client()
+
+        # Query the table
+        query = f"SELECT * FROM `{bigquery_table}`"
+        query_job = client.query(query)
+
+        # Convert the query results to dictionaries
+        results = [dict(row) for row in query_job]
+
+        # Return the results as JSON
+        return jsonify(results)
+    except Exception as e:
+        return jsonify(error=str(e)), 400
 
 def pre_backtest_updates(task_id, params):
     session = Session()
