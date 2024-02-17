@@ -81,13 +81,10 @@ def get_raw_data():
     try:
         # Extract parameters from the query string
         bigquery_table = request.args.get('bigquery_table')
-
-        logging.info(f"bigquery_table: {bigquery_table}")
+        logging.info(f"GET /raw_data for {bigquery_table}")
 
         # Create a BigQuery client
         client = bigquery.Client()
-
-        logging.info(f"Created client: {client}")
 
         # Query the table
         query = f"""
@@ -96,22 +93,10 @@ def get_raw_data():
             ;
         """
 
-        logging.info(f"Query: {query}")
-
         query_job = client.query(query)
-
-        logging.info(f"Query job: {query_job}")
-
-        # Convert the query results to dictionaries
         results = query_job.result()
-
-        logging.info(f"Results: {results}")
-
         results = [dict(row) for row in results]
 
-        logging.info(f"Results: {results}")
-
-        # Return the results as JSON
         return jsonify(results)
     except Exception as e:
         return jsonify(error=str(e)), 400
