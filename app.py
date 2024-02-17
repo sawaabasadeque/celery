@@ -75,12 +75,12 @@ def get_backtests():
     finally:
         session.close()
 
-@app.route('/raw_data', methods=['GET'])
+@app.route('/raw_data', methods=['POST'])
 @require_api_key
 def get_raw_data():
     try:
-       # Extract parameters from the query string
-        bigquery_table = request.args.get('bigquery_table')
+        # Extract parameters from the request body
+        bigquery_table = request.json.get('bigquery_table')
 
         logging.info(f"bigquery_table: {bigquery_table}")
 
@@ -104,9 +104,11 @@ def get_raw_data():
 
         # Convert the query results to dictionaries
         results = query_job.result()
-        results = [dict(row) for row in results]
 
         logging.info(f"Results: {results}")
+        results = [dict(row) for row in results]
+
+        logging.info(f"Results List: {results}")
 
         # Return the results as JSON
         return jsonify(results)
