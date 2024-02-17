@@ -81,6 +81,8 @@ def get_raw_data():
     try:
        # Extract parameters from the query string
         bigquery_table = request.args.get('bigquery_table')
+
+        logging.info(f'bigquery_table: {bigquery_table}')
         
         if not bigquery_table:
             return jsonify(error="bigquery_table parameter is required"), 400
