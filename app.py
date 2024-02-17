@@ -103,7 +103,8 @@ def get_raw_data():
         logging.info(f"Query job: {query_job}")
 
         # Convert the query results to dictionaries
-        results = [dict(row) for row in query_job]
+        results = query_job.result()
+        results = [dict(row) for row in results]
 
         logging.info(f"Results: {results}")
 
