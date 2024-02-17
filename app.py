@@ -98,6 +98,8 @@ def get_raw_data():
 
         # Query the table
         query = f"SELECT * FROM `{table_id}`"
+
+        logging.info(f'Running query: {query}')
         query_job = client.query(query)
 
         # Convert the query results to dictionaries
