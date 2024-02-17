@@ -82,28 +82,30 @@ def get_raw_data():
        # Extract parameters from the query string
         bigquery_table = request.args.get('bigquery_table')
 
-        logging.info(f'bigquery_table: {bigquery_table}')
-        
-        if not bigquery_table:
-            return jsonify(error="bigquery_table parameter is required"), 400
+        logging.info(f"bigquery_table: {bigquery_table}")
 
         # Create a BigQuery client
         client = bigquery.Client()
 
-        # Parse the bigquery_table parameter into a TableReference object
-        table_ref = bigquery.TableReference.from_string(bigquery_table)
-
-        # Convert the TableReference object back into a string
-        table_id = table_ref.to_bqstorage()
+        logging.info(f"Created client: {client}")
 
         # Query the table
-        query = f"SELECT * FROM `{table_id}`;"
+        query = f"""
+            SELECT * 
+            FROM `{bigquery_table}`
+            ;
+        """
 
-        logging.info(f'Running query: {query}')
+        logging.info(f"Query: {query}")
+
         query_job = client.query(query)
+
+        logging.info(f"Query job: {query_job}")
 
         # Convert the query results to dictionaries
         results = [dict(row) for row in query_job]
+
+        logging.info(f"Results: {results}")
 
         # Return the results as JSON
         return jsonify(results)
