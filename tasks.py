@@ -101,7 +101,7 @@ def run_backtest(self, params):
     for table_name, info in backtest_upload_info.items():
         upload_df_to_bigquery(table_name, info["dataframe"], info["file_name"])
         
-    post_backtest_updates(task_id, backtest_id, table_name, statistics)
+    post_backtest_updates(task_id, backtest_id, backtester_daily_results_table_name, statistics)
     return {
             "task_id": task_id,
             "start_date": params.get("start_date"),

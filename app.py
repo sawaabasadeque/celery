@@ -88,8 +88,9 @@ def get_raw_data():
 
         # Query the table
         query = f"""
-            SELECT * 
-            FROM `{bigquery_table}`
+            SELECT tb.* 
+            FROM `{bigquery_table}` tb
+            ORDER BY tb.current_date ASC
             ;
         """
 
