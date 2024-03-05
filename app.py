@@ -101,6 +101,35 @@ def get_raw_data():
         return jsonify(results)
     except Exception as e:
         return jsonify(error=str(e)), 400
+    
+@app.route('/benchmark_data', methods=['GET'])
+@require_api_key
+def get_benchmark_data():
+    try:
+        # Extract parameters from the query string
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        logging.info(f"GET /benchmark_date from {start_date} to {end_date}")
+
+        # Create a BigQuery client
+        client = bigquery.Client()
+
+        # Query the table
+        query = f"""
+            SELECT tb.* 
+            FROM `alduin-390505.benchmark.benchmark_alpha_vantage` tb
+            WHERE tb.date_field_0 >= '{start_date}' AND tb.date_field_0 <= '{end_date}'
+            ORDER BY tb.date_field_0 ASC
+            ;
+        """
+
+        query_job = client.query(query)
+        results = query_job.result()
+        results = [dict(row) for row in results]
+
+        return jsonify(results)
+    except Exception as e:
+        return jsonify(error=str(e)), 400
 
 def pre_backtest_updates(task_id, params):
     session = Session()
