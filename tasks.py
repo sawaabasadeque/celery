@@ -54,12 +54,13 @@ def run_backtest(self, params):
     task_id = self.request.id
     backtest_id = params.get('backtest_id')
     testing = params.get("testing", False)
-    initial_portfolio_value = params.get("portfolio_value", 1000000)
+    initial_portfolio_value = params.get("initial_balance", 1000000)
 
     logger.info(f"Initializing backtest for task {task_id} w/ testing={testing} ...")
     backtester = BacktestEngine(start_date=params.get("start_date"),
                                 end_date=params.get("end_date"),
-                                sell_strike_method=params.get("sell_strike_method", "percent_under"),
+                                strategy=params.get("strategy", "Percentage Under"),
+                                strategy_unit=params.get("strategy_unit", 0.15),
                                 portfolio_value=initial_portfolio_value,
                                 spread=params.get("spread", 50))
     
