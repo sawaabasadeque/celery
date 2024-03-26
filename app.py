@@ -137,6 +137,7 @@ def pre_backtest_updates(task_id, params):
         logging.info(f'Saving task {task_id} to Postgres backtests table...')
         start_date, _ = get_first_and_last_day(params['start_date'])
         _, end_date = get_first_and_last_day(params['end_date'])
+        strategy = params.get("strategy", "Percentage Under").lower().replace(" ", "_")
         new_backtest = Backtest(id=params['backtest_id'],
                                 task_id=task_id,
                                 start_date=start_date,
@@ -144,7 +145,7 @@ def pre_backtest_updates(task_id, params):
                                 spread=params.get('spread', 50),
                                 initial_portfolio_value=params.get("initial_balance", 1000000),
                                 status='running',
-                                strategy=params.get("strategy", "Percentage Under"),
+                                strategy=strategy,
                                 strategy_unit=params.get("strategy_unit", 0.15))
         session.add(new_backtest)
         session.commit()
