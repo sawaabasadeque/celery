@@ -142,9 +142,9 @@ def pre_backtest_updates(task_id, params):
                                 start_date=start_date,
                                 end_date=end_date,
                                 spread=params.get('spread', 50),
-                                initial_portfolio_value=params.get('initial_portfolio_value', 1000000),
+                                initial_portfolio_value=params.get("initial_balance", 1000000),
                                 status='running',
-                                sell_strike_method=params.get('sell_strike_method', 'percent_under'))
+                                sell_strike_method=params.get("strategy", "Percentage Under"))
         session.add(new_backtest)
         session.commit()
     except Exception as e:

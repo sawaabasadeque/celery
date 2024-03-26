@@ -17,7 +17,8 @@ class Backtest(Base):
     spread = Column(Integer)
     initial_portfolio_value = Column(Float)
     status = Column(Enum('running', 'completed', 'error', name='status_enum'))
-    sell_strike_method = Column(Enum('percent_under', 'desired_premium', name='sell_strike_method_enum'))
+    strategy = Column(Enum('percent_under', 'desired_premium', name='sell_strike_method_enum'))
+    strategy_unit = Column(Float)
 
     def to_dict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
